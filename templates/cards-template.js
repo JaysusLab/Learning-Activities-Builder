@@ -1,0 +1,85 @@
+// ══════════════════════════════════════════════
+// TEMPLATE: Card Interaction — Downloadable HTML
+// ══════════════════════════════════════════════
+// Edit this file to change the exported HTML structure,
+// styles, and runtime behaviour of the Cards activity.
+
+function buildCardsHTML(data) {
+
+  // ── Embedded CSS ──
+  var css = [
+    '*{margin:0;padding:0;box-sizing:border-box}',
+    'body{font-family:Arial,sans-serif;background:#D4D4D4;padding:20px;color:#000;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding-top:40px}',
+    '.activity-wrapper{max-width:600px;width:100%;margin:0 auto}',
+    '.speech-bubble{background:#DDE0FF;border:2px solid #5564FF;border-radius:6px;width:50%;padding:12px 20px;font-size:14px;color:#000;margin-bottom:15px;text-align:center;box-shadow:0 2px 8px rgba(85,100,255,.2);opacity:0;animation:fadeIn .5s ease .3s forwards;position:relative}',
+    '.speech-bubble::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #5564FF}',
+    '.speech-bubble::before{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid #DDE0FF}',
+    '.speech-bubble.hide{animation:fadeOut .3s ease forwards}',
+    '.container{width:100%;background:#FFF;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.1);border:1px solid #F2F2F2;padding:20px 30px 30px;opacity:0;transition:opacity .3s ease}',
+    '.container.loaded{opacity:1}',
+    '.cards-container{display:flex;flex-direction:column;gap:15px}',
+    '.card{background:#FFF;border:2px solid #DDE0FF;border-radius:6px;padding:25px;cursor:pointer;transition:all .3s ease;position:relative;min-height:80px}',
+    '.card:hover,.card.active{border-color:#5564FF;box-shadow:0 4px 12px rgba(85,100,255,.2)}',
+    '.card:hover{transform:translateX(5px)}',
+    '.card.active{background:#DDE0FF;transform:translateX(0)}',
+    '.card-header{display:flex;align-items:center;gap:15px}',
+    '.card-number{display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:#5564FF;color:#FFF;font-family:"Andale Mono",monospace;font-weight:bold;font-size:18px;border-radius:6px;flex-shrink:0}',
+    '.card-title{font-weight:bold;font-size:1rem;line-height:1.3;flex-grow:1}',
+    '.card-icon{position:absolute;right:25px;top:50%;transform:translateY(-50%);transition:transform .3s ease;font-size:24px;color:#5564FF}',
+    '.card.active .card-icon{transform:translateY(-50%) rotate(90deg)}',
+    '.card-content{max-height:0;overflow:hidden;transition:max-height .3s ease;line-height:1.6;padding-left:55px}',
+    '.card.active .card-content{max-height:300px;margin-top:15px}',
+    '@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}',
+    '@keyframes fadeOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-10px)}}',
+    '@media(max-width:768px){.container{padding:20px}.card{padding:20px}.card-content{padding-left:0;margin-left:55px}}'
+  ].join('\n');
+
+  // ── Embedded JS ──
+  var js = [
+    'var DATA=' + JSON.stringify(data) + ',hasInteracted=false,bubbleTimeout;',
+    'var sb=document.getElementById("speechBubble");',
+    'function pad(n){return String(n).padStart(2,"0");}',
+    'function init(){',
+    '  var cc=document.getElementById("cardsContainer");',
+    '  cc.innerHTML=DATA.cards.map(function(c,i){var n=pad(c.number||i+1);return\'<div class="card" tabindex="0" role="button" aria-expanded="false" data-i="\'+i+\'"><div class="card-header"><span class="card-number">\'+n+\'</span><span class="card-title">\'+c.title+\'</span></div><span class="card-icon">&#8250;</span><div class="card-content">\'+c.content+\'</div></div>\';}).join("");',
+    '  sb.textContent=DATA.speechBubble;sb.style.display="block";',
+    '  setTimeout(function(){document.getElementById("mainContainer").classList.add("loaded");},100);',
+    '  var tout=(DATA.settings&&DATA.settings.speechBubbleTimeout)||8000;',
+    '  bubbleTimeout=setTimeout(function(){if(!hasInteracted)sb.classList.add("hide");},tout);',
+    '  var allC=document.querySelectorAll(".card");',
+    '  allC.forEach(function(card){',
+    '    card.addEventListener("click",function(){',
+    '      if(!hasInteracted){hasInteracted=true;sb.classList.add("hide");clearTimeout(bubbleTimeout);}',
+    '      var was=this.classList.contains("active");',
+    '      allC.forEach(function(c){c.classList.remove("active");c.setAttribute("aria-expanded","false");});',
+    '      if(!was){this.classList.add("active");this.setAttribute("aria-expanded","true");}',
+    '      this.blur();',
+    '    });',
+    '    card.addEventListener("keydown",function(e){',
+    '      if(e.key==="Enter"||e.key===" "){e.preventDefault();this.click();this.focus();}',
+    '      else if(e.key==="ArrowDown"){e.preventDefault();var n=this.nextElementSibling;if(n&&n.classList.contains("card"))n.focus();}',
+    '      else if(e.key==="ArrowUp"){e.preventDefault();var p=this.previousElementSibling;if(p&&p.classList.contains("card"))p.focus();}',
+    '    });',
+    '  });',
+    '  document.addEventListener("click",function(e){if(!e.target.closest(".card")){allC.forEach(function(c){c.classList.remove("active");c.setAttribute("aria-expanded","false");});}});',
+    '}',
+    'init();'
+  ].join('\n');
+
+  // ── Assemble full HTML document ──
+  return '<!DOCTYPE html>\n' +
+    '<html lang="en">\n<head>\n' +
+    '<meta charset="UTF-8">\n' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
+    '<title>' + esc(data.title) + '</title>\n' +
+    '<style>\n' + css + '\n</style>\n' +
+    '</head>\n<body>\n' +
+    '<div class="activity-wrapper">\n' +
+    '  <div class="speech-bubble" id="speechBubble" style="display:none"></div>\n' +
+    '  <div class="container" id="mainContainer">\n' +
+    '    <div class="cards-container" id="cardsContainer"></div>\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<script>\n' + js + '\n<\/script>\n' +
+    '</body>\n</html>';
+}
