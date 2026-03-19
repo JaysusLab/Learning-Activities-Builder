@@ -2,6 +2,40 @@
 // TAB 2 — CARD INTERACTION: Editor Logic
 // ══════════════════════════════════════════════
 
+var CARDS_THEMES = {
+  blue:   { primary: '#5564FF', accent: '#DDE0FF' },
+  pink:   { primary: '#FF8FB3', accent: '#FFE9F0' },
+  green:  { primary: '#00985B', accent: '#B7FFE2' },
+  yellow: { primary: '#FFCB11', accent: '#FFF5CF' }
+};
+var selectedCardsTheme = 'blue';
+var selectedCardsBg = '#EBEBEB';
+
+function selectCardsBg(hex) {
+  selectedCardsBg = hex;
+  document.querySelectorAll('[id^="c-bg-"]').forEach(function (el) {
+    el.classList.toggle('selected', el.dataset.color === hex);
+  });
+  document.getElementById('c_bgCustom').value = '';
+  document.getElementById('cardsPreview').style.background = hex;
+}
+
+function applyCustomCardsBg(val) {
+  if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+    selectedCardsBg = val;
+    document.querySelectorAll('[id^="c-bg-"]').forEach(function (el) { el.classList.remove('selected'); });
+    document.getElementById('cardsPreview').style.background = val;
+  }
+}
+
+function selectCardsTheme(name) {
+  selectedCardsTheme = name;
+  document.querySelectorAll('[id^="c-swatch-"]').forEach(function (el) {
+    el.classList.toggle('selected', el.id === 'c-swatch-' + name);
+  });
+  refreshCards();
+}
+
 var cards = [
   { title: 'Card Title 1', content: 'This is the expandable content for the first card. Add your learning content here.' },
   { title: 'Card Title 2', content: 'This is the expandable content for the second card. Add your learning content here.' },
@@ -66,6 +100,8 @@ function buildCardsData() {
     title: v('c_activityTitle'),
     speechBubble: v('c_bubbleText'),
     settings: { speechBubbleTimeout: parseInt(v('c_bubbleTimeout')) || 8000 },
+    theme: CARDS_THEMES[selectedCardsTheme] || CARDS_THEMES.blue,
+    backgroundColor: selectedCardsBg,
     cards: cards.map(function (c, i) {
       return { id: i, number: i + 1, title: c.title, content: c.content };
     })
@@ -78,8 +114,12 @@ function renderCardsPreview() {
   var container = document.getElementById('cardsPreview');
   container.innerHTML = '';
 
+  var theme = CARDS_THEMES[selectedCardsTheme] || CARDS_THEMES.blue;
+
   var wrapper = document.createElement('div');
   wrapper.className = 'cpv-wrapper';
+  wrapper.style.setProperty('--cpv-primary', theme.primary);
+  wrapper.style.setProperty('--cpv-accent', theme.accent);
 
   var bubble = document.createElement('div');
   bubble.className = 'cpv-bubble';

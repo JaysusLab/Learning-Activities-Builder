@@ -50,6 +50,20 @@
         Download ZIP
       </button>
     </div>
+    <div class="tab-actions" id="actions-timeline">
+      <button class="btn btn-secondary" onclick="downloadTimelineJSON()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
+        Download JSON
+      </button>
+      <button class="btn btn-secondary" onclick="downloadTimelineHTML()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
+        Download index.html
+      </button>
+      <button class="btn btn-primary" onclick="downloadTimelineZIP()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
+        Download ZIP
+      </button>
+    </div>
   </div>
 </header>
 
@@ -59,6 +73,7 @@
 <nav class="tab-bar">
   <button class="tab-btn active" id="tab-steps" onclick="switchTab('steps')">Use Case</button>
   <button class="tab-btn" id="tab-cards" onclick="switchTab('cards')">Card Interaction</button>
+  <button class="tab-btn" id="tab-timeline" onclick="switchTab('timeline')">Vertical Steps</button>
 </nav>
 
 <!-- ══════════════════════════════════════════
@@ -237,6 +252,23 @@
           </div>
         </div>
 
+        <div style="padding:14px 24px;border-bottom:1px solid var(--surface-border)">
+          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Theme</p>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+            <button class="theme-swatch selected" id="c-swatch-blue"   onclick="selectCardsTheme('blue')"   style="background:#5564FF" title="Blue"></button>
+            <button class="theme-swatch"           id="c-swatch-pink"   onclick="selectCardsTheme('pink')"   style="background:#FF8FB3" title="Pink"></button>
+            <button class="theme-swatch"           id="c-swatch-green"  onclick="selectCardsTheme('green')"  style="background:#00985B" title="Green"></button>
+            <button class="theme-swatch"           id="c-swatch-yellow" onclick="selectCardsTheme('yellow')" style="background:#FFCB11" title="Yellow"></button>
+          </div>
+          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Background</p>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="theme-swatch selected" id="c-bg-1" data-color="#EBEBEB" onclick="selectCardsBg('#EBEBEB')" style="background:#EBEBEB;border:1px solid var(--surface-border)" title="Light"></button>
+            <button class="theme-swatch"          id="c-bg-2" data-color="#D4D4D4" onclick="selectCardsBg('#D4D4D4')" style="background:#D4D4D4;border:1px solid var(--surface-border)" title="Mid"></button>
+            <button class="theme-swatch"          id="c-bg-3" data-color="#9E9E9E" onclick="selectCardsBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
+            <input type="text" id="c_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomCardsBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
+          </div>
+        </div>
+
         <div class="accordion open" id="c-acc-bubble">
           <button class="accordion-trigger" onclick="toggleAccordion('c-acc-bubble')">
             <div class="accordion-trigger-left"><span class="accordion-title">Speech bubble</span></div>
@@ -277,6 +309,96 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     TAB 3 — Setup Steps Timeline
+══════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-timeline">
+  <div class="workspace">
+    <section class="preview-panel">
+      <div class="preview-toolbar">
+        <span class="preview-label">Live preview</span>
+      </div>
+      <div class="preview-frame-wrap">
+        <div class="preview-viewport" id="timelinePreview"></div>
+      </div>
+    </section>
+
+    <aside class="editor-panel">
+      <div class="editor-scroll">
+
+        <div style="padding:16px 24px;border-bottom:1px solid var(--surface-border)">
+          <div class="field" style="margin-bottom:0">
+            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
+            <input type="text" id="t_activityTitle" value="Setup Steps" oninput="refreshTimeline()">
+          </div>
+        </div>
+
+        <div style="padding:14px 24px;border-bottom:1px solid var(--surface-border)">
+          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Theme</p>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+            <button class="theme-swatch"           id="t-swatch-blue"   onclick="selectTimelineTheme('blue')"   style="background:#5564FF" title="Blue"></button>
+            <button class="theme-swatch"           id="t-swatch-pink"   onclick="selectTimelineTheme('pink')"   style="background:#FF8FB3" title="Pink"></button>
+            <button class="theme-swatch selected"  id="t-swatch-green"  onclick="selectTimelineTheme('green')"  style="background:#00985B" title="Green"></button>
+            <button class="theme-swatch"           id="t-swatch-yellow" onclick="selectTimelineTheme('yellow')" style="background:#FFCB11" title="Yellow"></button>
+          </div>
+          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Background</p>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="theme-swatch"          id="t-bg-1" data-color="#EBEBEB" onclick="selectTimelineBg('#EBEBEB')" style="background:#EBEBEB;border:1px solid var(--surface-border)" title="Light"></button>
+            <button class="theme-swatch selected" id="t-bg-2" data-color="#D4D4D4" onclick="selectTimelineBg('#D4D4D4')" style="background:#D4D4D4;border:1px solid var(--surface-border)" title="Mid"></button>
+            <button class="theme-swatch"          id="t-bg-3" data-color="#9E9E9E" onclick="selectTimelineBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
+            <input type="text" id="t_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomTimelineBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
+          </div>
+        </div>
+
+        <div class="accordion open" id="t-acc-bubble">
+          <button class="accordion-trigger" onclick="toggleAccordion('t-acc-bubble')">
+            <div class="accordion-trigger-left"><span class="accordion-title">Speech bubble</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="field">
+              <label>Speech bubble text <span style="color:var(--text-muted);font-weight:400">(exported only — not shown in preview)</span></label>
+              <input type="text" id="t_speechBubble" value="Click Next to progress through each setup step" oninput="refreshTimeline()">
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion open" id="t-acc-nav">
+          <button class="accordion-trigger" onclick="toggleAccordion('t-acc-nav')">
+            <div class="accordion-trigger-left"><span class="accordion-title">Navigation labels</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="field">
+              <label>Next button label</label>
+              <input type="text" id="t_navNext" value="Next" oninput="refreshTimeline()">
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion open" id="t-acc-steps">
+          <button class="accordion-trigger" onclick="toggleAccordion('t-acc-steps')">
+            <div class="accordion-trigger-left">
+              <span class="accordion-title">Steps</span>
+              <span class="accordion-badge" id="t_stepCountBadge">3 steps</span>
+            </div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div id="t_stepsContainer"></div>
+            <button class="add-step-btn" id="t_addStepBtn" onclick="addTimelineStep()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v10M3 8h10"/></svg>
+              Add step
+            </button>
+            <p class="step-limit-note" id="t_stepLimitNote" style="display:none">Maximum 9 steps reached</p>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast">
   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 4.5L6.5 11 3 7.5"/></svg>
@@ -293,8 +415,10 @@
 <script src="js/utils.js"></script>
 <script src="templates/steps-template.js"></script>
 <script src="templates/cards-template.js"></script>
+<script src="templates/timeline-template.js"></script>
 <script src="js/steps-editor.js"></script>
 <script src="js/cards-editor.js"></script>
+<script src="js/timeline-editor.js"></script>
 <script src="js/init.js"></script>
 
 </body>
