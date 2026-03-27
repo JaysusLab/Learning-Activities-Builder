@@ -124,6 +124,11 @@ function toggleActivitySections() {
   refreshSteps();
 }
 
+function getShowStepText() {
+  var el = document.getElementById('s_stepTextToggle');
+  return el ? el.checked : true;
+}
+
 // ── Build JSON data ──
 function buildStepsData() {
   var imgVal = v('s_charImage').trim();
@@ -144,6 +149,8 @@ function buildStepsData() {
     showIntroduction: showIntro,
     showSteps: showSteps,
     showNavigation: showSteps,
+    showStepCounter: getShowStepText(),
+    stepBadgeLabel: v('s_stepBadgeLabel') || 'STEP',
     theme: STEPS_THEMES[selectedStepsTheme] || STEPS_THEMES.blue,
     backgroundColor: selectedStepsBg,
     character: {
@@ -220,7 +227,7 @@ function renderStepsPreview() {
       d.innerHTML = '<div class="spv-step-content">' + introTitleHtml + '<p>' + escTBr(slide.content) + '</p></div>';
     } else {
       var stepTitleHtml = slide.showTitle ? '<div class="spv-step-title">' + escT(slide.title) + '</div>' : '';
-      d.innerHTML = '<div class="spv-step-badge">STEP ' + slide.stepNumber + '</div>' +
+      d.innerHTML = '<div class="spv-step-badge">' + escT((data.stepBadgeLabel || 'STEP').toUpperCase()) + ' ' + slide.stepNumber + '</div>' +
         stepTitleHtml +
         '<div class="spv-step-content">' + escTBr(slide.content) + '</div>';
     }
@@ -238,12 +245,14 @@ function renderStepsPreview() {
     nav.className = 'spv-nav';
     prevBtn = document.createElement('button');
     prevBtn.className = 'spv-nav-btn';
-    prog = document.createElement('span');
-    prog.className = 'spv-progress';
+    if (data.showStepCounter) {
+      prog = document.createElement('span');
+      prog.className = 'spv-progress';
+    }
     nextBtn = document.createElement('button');
     nextBtn.className = 'spv-nav-btn';
     nav.appendChild(prevBtn);
-    nav.appendChild(prog);
+    if (data.showStepCounter) nav.appendChild(prog);
     nav.appendChild(nextBtn);
     textCol.appendChild(nav);
   }
@@ -262,12 +271,14 @@ function renderStepsPreview() {
     prevBtn.innerHTML = arrowL + escT(data.navigation.previousButtonText);
     var nextLabel = cur === totalSlides - 1 ? data.navigation.completeButtonText : data.navigation.nextButtonText;
     nextBtn.innerHTML = escT(nextLabel) + arrowR;
-    var firstSlide = data.slides[0];
-    if (cur === 0 && firstSlide && firstSlide.type === 'introduction') {
-      prog.textContent = data.navigation.progressLabels.introduction;
-    } else {
-      var stepIdx = data.showIntroduction ? cur : cur + 1;
-      prog.textContent = data.navigation.progressLabels.stepFormat.replace('{current}', stepIdx).replace('{total}', totalSteps);
+    if (data.showStepCounter && prog) {
+      var firstSlide = data.slides[0];
+      if (cur === 0 && firstSlide && firstSlide.type === 'introduction') {
+        prog.textContent = data.navigation.progressLabels.introduction;
+      } else {
+        var stepIdx = data.showIntroduction ? cur : cur + 1;
+        prog.textContent = data.navigation.progressLabels.stepFormat.replace('{current}', stepIdx).replace('{total}', totalSteps);
+      }
     }
   }
 

@@ -125,6 +125,13 @@
                 </div>
                 <span>Include Steps</span>
               </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="s_stepTextToggle" onchange="toggleActivitySections()" checked>
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show Step Counter</span>
+              </label>
             </div>
           </div>
           <div style="width:1px;background:var(--surface-border);margin:14px 0;flex-shrink:0"></div>
@@ -219,6 +226,10 @@
               <div class="field"><label>Next button</label><input type="text" id="s_navNext" value="Next" oninput="refreshSteps()"></div>
               <div class="field"><label>Complete button</label><input type="text" id="s_navComplete" value="Complete" oninput="refreshSteps()"></div>
               <div class="field"><label>Introduction label</label><input type="text" id="s_navIntro" value="Introduction" oninput="refreshSteps()"></div>
+            </div>
+            <div class="field">
+              <label>Step badge label</label>
+              <input type="text" id="s_stepBadgeLabel" value="STEP" placeholder="e.g. Action, Consideration" oninput="refreshSteps()">
             </div>
           </div>
         </div>

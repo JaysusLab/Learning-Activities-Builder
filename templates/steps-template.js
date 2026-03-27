@@ -62,7 +62,7 @@ function buildStepsHTML(data) {
     '  D.slides.forEach(function(slide,i){',
     '    var d=document.createElement("div");d.className="content-slide";if(i===0)d.classList.add("active");',
     '    if(slide.type==="introduction"){var t=slide.showTitle?"<p class=\'intro-title\'>"+slide.title+"</p>":"";var txt=slide.content.replace(/\\n/g,"<br>");d.innerHTML="<div class=\'step-content\'>"+t+"<p>"+txt+"</p></div>";}',
-    '    else{var t=slide.showTitle?"<h2 class=\'step-title\'>"+slide.title+"</h2>":"";var txt=slide.content.replace(/\\n/g,"<br>");d.innerHTML="<div class=\'step-badge\'>STEP "+slide.stepNumber+"</div>"+t+"<div class=\'step-content\'><p>"+txt+"</p></div>";}',
+    '    else{var t=slide.showTitle?"<h2 class=\'step-title\'>"+slide.title+"</h2>":"";var txt=slide.content.replace(/\\n/g,"<br>");d.innerHTML="<div class=\'step-badge\'>"+(D.stepBadgeLabel||"STEP").toUpperCase()+" "+slide.stepNumber+"</div>"+t+"<div class=\'step-content\'><p>"+txt+"</p></div>";}',
     '    c.appendChild(d);',
     '  });',
     '}',
@@ -77,21 +77,22 @@ function buildStepsHTML(data) {
     '  var prev=document.getElementById("prevBtn"),next=document.getElementById("nextBtn"),ntxt=document.getElementById("nextBtnText"),prog=document.getElementById("progressIndicator");',
     '  prev.disabled=cur===0;next.disabled=cur===total-1;',
     '  ntxt.textContent=cur===total-1?D.navigation.completeButtonText:D.navigation.nextButtonText;',
-    '  var first=D.slides[0];',
-    '  if(cur===0&&first&&first.type==="introduction"){prog.textContent=D.navigation.progressLabels.introduction;}',
-    '  else{var si=D.showIntroduction?cur:cur+1;prog.textContent=D.navigation.progressLabels.stepFormat.replace("{current}",si).replace("{total}",steps);}',
+    '  if(D.showStepCounter&&prog){var first=D.slides[0];if(cur===0&&first&&first.type==="introduction"){prog.textContent=D.navigation.progressLabels.introduction;}else{var si=D.showIntroduction?cur:cur+1;prog.textContent=D.navigation.progressLabels.stepFormat.replace("{current}",si).replace("{total}",steps);}}',
     '}',
     'document.addEventListener("keydown",function(e){if(e.key==="ArrowLeft"&&cur>0)changeSlide(-1);else if(e.key==="ArrowRight"&&cur<total-1)changeSlide(1);});',
     'init();'
   ].join('\n');
 
+  var progressIndicatorHtml = data.showStepCounter
+    ? '        <span class="progress-indicator" id="progressIndicator"></span>\n'
+    : '';
   var navControls = data.showNavigation
     ? '      <div class="navigation-controls">\n' +
       '        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">\n' +
       '          <svg class="arrow-icon" viewBox="0 0 20 20"><path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/></svg>\n' +
       '          <span id="prevBtnText"></span>\n' +
       '        </button>\n' +
-      '        <span class="progress-indicator" id="progressIndicator"></span>\n' +
+      progressIndicatorHtml +
       '        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">\n' +
       '          <span id="nextBtnText"></span>\n' +
       '          <svg class="arrow-icon" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/></svg>\n' +
