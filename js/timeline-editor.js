@@ -93,10 +93,18 @@ function removeTimelineStep(i) {
   refreshTimeline();
 }
 
+function toggleTimelineActivityTitle() {
+  var show = document.getElementById('t_showActivityTitle').checked;
+  document.getElementById('t-title-section').style.display = show ? 'block' : 'none';
+  refreshTimeline();
+}
+
 // ── Build JSON data ──
 function buildTimelineData() {
+  var showActivityTitle = document.getElementById('t_showActivityTitle') ? document.getElementById('t_showActivityTitle').checked : false;
   return {
     title: v('t_activityTitle'),
+    showActivityTitle: showActivityTitle,
     speechBubbleText: v('t_speechBubble'),
     navigation: { next: v('t_navNext') },
     theme: TIMELINE_THEMES[selectedTimelineTheme] || TIMELINE_THEMES.green,
@@ -120,10 +128,12 @@ function renderTimelinePreview() {
   wrapper.style.setProperty('--tpv-primary', theme.primary);
   wrapper.style.setProperty('--tpv-accent', theme.accent);
 
-  var title = document.createElement('h1');
-  title.className = 'tpv-title';
-  title.textContent = data.title;
-  wrapper.appendChild(title);
+  if (data.showActivityTitle) {
+    var title = document.createElement('h1');
+    title.className = 'tpv-title';
+    title.textContent = data.title;
+    wrapper.appendChild(title);
+  }
 
   var timelineWrapper = document.createElement('div');
   timelineWrapper.className = 'tpv-timeline';
@@ -215,25 +225,12 @@ function refreshTimeline() {
 }
 
 // ── Downloads ──
-function downloadTimelineJSON() {
-  var blob = new Blob([JSON.stringify(buildTimelineData(), null, 2)], { type: 'application/json' });
-  triggerDownload(blob, 'data_learningactivity.json');
-  showToast('data_learningactivity.json downloaded');
-}
-
 function downloadTimelineHTML() {
   var blob = new Blob([buildTimelineHTML(buildTimelineData())], { type: 'text/html' });
   triggerDownload(blob, 'index.html');
   showToast('index.html downloaded');
 }
 
-function downloadTimelineZIP() {
-  var data = buildTimelineData();
-  var zip = new JSZip();
-  zip.file('index.html', buildTimelineHTML(data));
-  zip.file('data_learningactivity.json', JSON.stringify(data, null, 2));
-  zip.generateAsync({ type: 'blob' }).then(function (blob) {
-    triggerDownload(blob, 'rise-activity-timeline.zip');
-    showToast('rise-activity-timeline.zip downloaded');
-  });
+function copyTimelineCode() {
+  copyToClipboard(buildTimelineHTML(buildTimelineData()));
 }

@@ -107,6 +107,12 @@ function removeStep(i) {
   refreshSteps();
 }
 
+function toggleStepsActivityTitle() {
+  var show = document.getElementById('s_showActivityTitle').checked;
+  document.getElementById('s-title-section').style.display = show ? 'block' : 'none';
+  refreshSteps();
+}
+
 function toggleIntroTitle() {
   var checked = document.getElementById('s_introTitleToggle').checked;
   document.getElementById('s_introTitle').style.display = checked ? '' : 'none';
@@ -143,8 +149,10 @@ function buildStepsData() {
         return { id: introSlide.length + i, type: 'step', stepNumber: s.stepNumber, showTitle: s.showTitle !== false, title: s.title, content: s.content };
       })
     : [];
+  var showActivityTitle = document.getElementById('s_showActivityTitle') ? document.getElementById('s_showActivityTitle').checked : false;
   return {
     activityTitle: v('s_activityTitle'),
+    showActivityTitle: showActivityTitle,
     showCharacter: showChar,
     showIntroduction: showIntro,
     showSteps: showSteps,
@@ -179,10 +187,12 @@ function renderStepsPreview() {
   wrap.style.setProperty('--theme-primary', theme.primary);
   wrap.style.setProperty('--theme-accent', theme.accent);
 
-  var hdr = document.createElement('div');
-  hdr.className = 'spv-header';
-  hdr.textContent = data.activityTitle;
-  wrap.appendChild(hdr);
+  if (data.showActivityTitle) {
+    var hdr = document.createElement('div');
+    hdr.className = 'spv-header';
+    hdr.textContent = data.activityTitle;
+    wrap.appendChild(hdr);
+  }
 
   var cw = document.createElement('div');
   cw.className = 'spv-content-wrapper ' + (data.showCharacter ? 'with-portrait' : 'no-portrait');
@@ -297,25 +307,12 @@ function refreshSteps() {
 }
 
 // ── Downloads ──
-function downloadStepsJSON() {
-  var blob = new Blob([JSON.stringify(buildStepsData(), null, 2)], { type: 'application/json' });
-  triggerDownload(blob, 'data_learningactivity.json');
-  showToast('data_learningactivity.json downloaded');
-}
-
 function downloadStepsHTML() {
   var blob = new Blob([buildStepsHTML(buildStepsData())], { type: 'text/html' });
   triggerDownload(blob, 'index.html');
   showToast('index.html downloaded');
 }
 
-function downloadStepsZIP() {
-  var data = buildStepsData();
-  var zip = new JSZip();
-  zip.file('index.html', buildStepsHTML(data));
-  zip.file('data_learningactivity.json', JSON.stringify(data, null, 2));
-  zip.generateAsync({ type: 'blob' }).then(function (blob) {
-    triggerDownload(blob, 'rise-activity-steps.zip');
-    showToast('rise-activity-steps.zip downloaded');
-  });
+function copyStepsCode() {
+  copyToClipboard(buildStepsHTML(buildStepsData()));
 }

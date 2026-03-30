@@ -18,6 +18,7 @@ function buildCardsHTML(data) {
     '.speech-bubble::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid ' + p + '}',
     '.speech-bubble::before{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid ' + a + '}',
     '.speech-bubble.hide{animation:fadeOut .3s ease forwards}',
+    '.activity-title{font-family:"Andale Mono",monospace;font-size:1.1rem;font-weight:bold;text-transform:uppercase;color:#000;margin-bottom:20px;text-align:center;border-bottom:3px solid ' + p + ';padding-bottom:14px}',
     '.container{width:100%;background:#FFF;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.1);border:1px solid #F2F2F2;padding:20px 30px 30px;opacity:0;transition:opacity .3s ease}',
     '.container.loaded{opacity:1}',
     '.cards-container{display:flex;flex-direction:column;gap:15px}',
@@ -40,19 +41,21 @@ function buildCardsHTML(data) {
   // ── Embedded JS ──
   var js = [
     'var DATA=' + JSON.stringify(data) + ',hasInteracted=false,bubbleTimeout;',
-    'var sb=document.getElementById("speechBubble");',
+    'var sb=DATA.showSpeechBubble?document.getElementById("speechBubble"):null;',
     'function pad(n){return String(n).padStart(2,"0");}',
     'function init(){',
     '  var cc=document.getElementById("cardsContainer");',
-    '  cc.innerHTML=DATA.cards.map(function(c,i){var n=pad(c.number||i+1);return\'<div class="card" tabindex="0" role="button" aria-expanded="false" data-i="\'+i+\'"><div class="card-header"><span class="card-number">\'+n+\'</span><span class="card-title">\'+c.title+\'</span></div><span class="card-icon">&#8250;</span><div class="card-content">\'+c.content+\'</div></div>\';}).join("");',
-    '  sb.textContent=DATA.speechBubble;sb.style.display="block";',
+    '  cc.innerHTML=DATA.cards.map(function(c,i){var n=pad(c.number||i+1);var titleHtml=c.showTitle!==false?\'<span class="card-title">\'+c.title+\'</span>\':\'\';return\'<div class="card" tabindex="0" role="button" aria-expanded="false" data-i="\'+i+\'"><div class="card-header"><span class="card-number">\'+n+\'</span>\'+titleHtml+\'</div><span class="card-icon">&#8250;</span><div class="card-content">\'+c.content+\'</div></div>\';}).join("");',
+    '  if(DATA.showActivityTitle){var th=document.getElementById("activityTitle");if(th)th.textContent=DATA.title;}',
+    '  if(sb){sb.textContent=DATA.speechBubble;sb.style.display="block";var tout=(DATA.settings&&DATA.settings.speechBubbleTimeout)||8000;bubbleTimeout=setTimeout(function(){if(!hasInteracted)sb.classList.add("hide");},tout);}',
     '  setTimeout(function(){document.getElementById("mainContainer").classList.add("loaded");},100);',
-    '  var tout=(DATA.settings&&DATA.settings.speechBubbleTimeout)||8000;',
-    '  bubbleTimeout=setTimeout(function(){if(!hasInteracted)sb.classList.add("hide");},tout);',
     '  var allC=document.querySelectorAll(".card");',
+    '  if(DATA.settings&&DATA.settings.expandedByDefault){allC.forEach(function(c){c.classList.add("active");c.setAttribute("aria-expanded","true");});}',
+    '  var expandedByDefault=DATA.settings&&DATA.settings.expandedByDefault;',
     '  allC.forEach(function(card){',
     '    card.addEventListener("click",function(){',
-    '      if(!hasInteracted){hasInteracted=true;sb.classList.add("hide");clearTimeout(bubbleTimeout);}',
+    '      if(sb&&!hasInteracted){hasInteracted=true;sb.classList.add("hide");clearTimeout(bubbleTimeout);}',
+    '      if(expandedByDefault){this.blur();return;}',
     '      var was=this.classList.contains("active");',
     '      allC.forEach(function(c){c.classList.remove("active");c.setAttribute("aria-expanded","false");});',
     '      if(!was){this.classList.add("active");this.setAttribute("aria-expanded","true");}',
@@ -64,10 +67,13 @@ function buildCardsHTML(data) {
     '      else if(e.key==="ArrowUp"){e.preventDefault();var p=this.previousElementSibling;if(p&&p.classList.contains("card"))p.focus();}',
     '    });',
     '  });',
-    '  document.addEventListener("click",function(e){if(!e.target.closest(".card")){allC.forEach(function(c){c.classList.remove("active");c.setAttribute("aria-expanded","false");});}});',
+    '  if(!expandedByDefault){document.addEventListener("click",function(e){if(!e.target.closest(".card")){allC.forEach(function(c){c.classList.remove("active");c.setAttribute("aria-expanded","false");});}});}',
     '}',
     'init();'
   ].join('\n');
+
+  var titleHtml = data.showActivityTitle ? '  <h1 class="activity-title" id="activityTitle"></h1>\n' : '';
+  var bubbleHtml = data.showSpeechBubble ? '  <div class="speech-bubble" id="speechBubble" style="display:none"></div>\n' : '';
 
   // ── Assemble full HTML document ──
   return '<!DOCTYPE html>\n' +
@@ -78,7 +84,8 @@ function buildCardsHTML(data) {
     '<style>\n' + css + '\n</style>\n' +
     '</head>\n<body>\n' +
     '<div class="activity-wrapper">\n' +
-    '  <div class="speech-bubble" id="speechBubble" style="display:none"></div>\n' +
+    titleHtml +
+    bubbleHtml +
     '  <div class="container" id="mainContainer">\n' +
     '    <div class="cards-container" id="cardsContainer"></div>\n' +
     '  </div>\n' +

@@ -44,7 +44,7 @@ function buildStepsHTML(data) {
   var js = [
     'var D=' + JSON.stringify(data) + ',cur=0,total=0,steps=0;',
     'function init(){',
-    '  document.getElementById("activityHeader").textContent=D.activityTitle;',
+    '  if(D.showActivityTitle){var ah=document.getElementById("activityHeader");if(ah)ah.textContent=D.activityTitle;}',
     '  if(D.showCharacter)setupPortrait();',
     '  if(D.showNavigation){document.getElementById("prevBtnText").textContent=D.navigation.previousButtonText;document.getElementById("nextBtnText").textContent=D.navigation.nextButtonText;}',
     '  buildSlides();',
@@ -109,7 +109,7 @@ function buildStepsHTML(data) {
     '<style>\n' + css + '\n</style>\n' +
     '</head>\n<body>\n' +
     '<div class="activity-container">\n' +
-    '  <h1 class="activity-header" id="activityHeader"></h1>\n' +
+    (data.showActivityTitle ? '  <h1 class="activity-header" id="activityHeader"></h1>\n' : '') +
     '  <div class="content-wrapper">\n' +
     '    ' + portraitCol + '\n' +
     '    <div class="text-column">\n' +

@@ -37,10 +37,10 @@ function selectCardsTheme(name) {
 }
 
 var cards = [
-  { title: 'Card Title 1', content: 'This is the expandable content for the first card. Add your learning content here.' },
-  { title: 'Card Title 2', content: 'This is the expandable content for the second card. Add your learning content here.' },
-  { title: 'Card Title 3', content: 'This is the expandable content for the third card. Add your learning content here.' },
-  { title: 'Card Title 4', content: 'This is the expandable content for the fourth card. Add your learning content here.' }
+  { title: 'Card Title 1', showTitle: true, content: 'This is the expandable content for the first card. Add your learning content here.' },
+  { title: 'Card Title 2', showTitle: true, content: 'This is the expandable content for the second card. Add your learning content here.' },
+  { title: 'Card Title 3', showTitle: true, content: 'This is the expandable content for the third card. Add your learning content here.' },
+  { title: 'Card Title 4', showTitle: true, content: 'This is the expandable content for the fourth card. Add your learning content here.' }
 ];
 
 // ── Render editor cards ──
@@ -48,6 +48,8 @@ function renderCards() {
   var container = document.getElementById('c_cardsContainer');
   container.innerHTML = '';
   cards.forEach(function (card, i) {
+    var titleChecked = card.showTitle !== false ? 'checked' : '';
+    var titleInputStyle = card.showTitle !== false ? '' : 'style="display:none"';
     var el = document.createElement('div');
     el.className = 'step-card';
     el.innerHTML =
@@ -57,8 +59,15 @@ function renderCards() {
           '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l10 10M13 3L3 13"/></svg>' +
         '</button>' +
       '</div>' +
-      '<div class="field"><label>Card title</label>' +
-        '<input type="text" value="' + esc(card.title) + '" oninput="updateCard(' + i + ',\'title\',this.value)">' +
+      '<div class="field">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<label style="margin-bottom:0">Card title</label>' +
+          '<label class="toggle-switch">' +
+            '<input type="checkbox" ' + titleChecked + ' onchange="toggleCardTitle(' + i + ',this.checked)">' +
+            '<div class="toggle-track"></div>' +
+          '</label>' +
+        '</div>' +
+        '<input type="text" value="' + esc(card.title) + '" ' + titleInputStyle + ' oninput="updateCard(' + i + ',\'title\',this.value)">' +
       '</div>' +
       '<div class="field"><label>Card content (shown on expand)</label>' +
         '<textarea oninput="updateCard(' + i + ',\'content\',this.value)">' + escT(card.content) + '</textarea>' +
@@ -71,6 +80,16 @@ function renderCards() {
   if (badge) badge.textContent = cards.length + (cards.length === 1 ? ' card' : ' cards');
 }
 
+function toggleCardTitle(i, checked) {
+  cards[i].showTitle = checked;
+  var cardEls = document.querySelectorAll('#c_cardsContainer .step-card');
+  if (cardEls[i]) {
+    var input = cardEls[i].querySelector('input[type="text"]');
+    if (input) input.style.display = checked ? '' : 'none';
+  }
+  refreshCards();
+}
+
 function updateCard(i, key, val) {
   cards[i][key] = val;
   refreshCards();
@@ -78,7 +97,7 @@ function updateCard(i, key, val) {
 
 function addCard() {
   if (cards.length >= 9) return;
-  cards.push({ title: '', content: '' });
+  cards.push({ title: '', showTitle: true, content: '' });
   renderCards();
   refreshCards();
   setTimeout(function () {
@@ -94,16 +113,37 @@ function removeCard(i) {
   refreshCards();
 }
 
+function toggleCardsActivityTitle() {
+  var show = document.getElementById('c_showActivityTitle').checked;
+  document.getElementById('c-title-section').style.display = show ? 'block' : 'none';
+  refreshCards();
+}
+
+function toggleCardsSpeechBubble() {
+  var show = document.getElementById('c_showSpeechBubble').checked;
+  document.getElementById('c-bubble-section').style.display = show ? 'block' : 'none';
+  refreshCards();
+}
+
 // ── Build JSON data ──
+function getExpandedByDefault() {
+  var el = document.getElementById('c_expandedByDefault');
+  return el ? el.checked : false;
+}
+
 function buildCardsData() {
+  var showSpeechBubble = document.getElementById('c_showSpeechBubble') ? document.getElementById('c_showSpeechBubble').checked : false;
+  var showActivityTitle = document.getElementById('c_showActivityTitle') ? document.getElementById('c_showActivityTitle').checked : false;
   return {
     title: v('c_activityTitle'),
+    showActivityTitle: showActivityTitle,
+    showSpeechBubble: showSpeechBubble,
     speechBubble: v('c_bubbleText'),
-    settings: { speechBubbleTimeout: parseInt(v('c_bubbleTimeout')) || 8000 },
+    settings: { speechBubbleTimeout: parseInt(v('c_bubbleTimeout')) || 8000, expandedByDefault: getExpandedByDefault() },
     theme: CARDS_THEMES[selectedCardsTheme] || CARDS_THEMES.blue,
     backgroundColor: selectedCardsBg,
     cards: cards.map(function (c, i) {
-      return { id: i, number: i + 1, title: c.title, content: c.content };
+      return { id: i, number: i + 1, title: c.title, showTitle: c.showTitle !== false, content: c.content };
     })
   };
 }
@@ -121,24 +161,37 @@ function renderCardsPreview() {
   wrapper.style.setProperty('--cpv-primary', theme.primary);
   wrapper.style.setProperty('--cpv-accent', theme.accent);
 
-  var bubble = document.createElement('div');
-  bubble.className = 'cpv-bubble';
-  bubble.textContent = data.speechBubble;
-  wrapper.appendChild(bubble);
+  if (data.showActivityTitle) {
+    var titleEl = document.createElement('div');
+    titleEl.className = 'cpv-title';
+    titleEl.textContent = data.title;
+    wrapper.appendChild(titleEl);
+  }
+
+  var bubble = null;
+  if (data.showSpeechBubble) {
+    bubble = document.createElement('div');
+    bubble.className = 'cpv-bubble';
+    bubble.textContent = data.speechBubble;
+    wrapper.appendChild(bubble);
+  }
 
   var box = document.createElement('div');
   box.className = 'cpv-container';
   var cardList = document.createElement('div');
   cardList.className = 'cpv-cards';
 
+  var expandedByDefault = (data.settings && data.settings.expandedByDefault) || false;
+
   data.cards.forEach(function (card, i) {
     var num = String(card.number || i + 1).padStart(2, '0');
     var cardEl = document.createElement('div');
-    cardEl.className = 'cpv-card';
+    cardEl.className = 'cpv-card' + (expandedByDefault ? ' open' : '');
 
     var header = document.createElement('div');
     header.className = 'cpv-card-header';
-    header.innerHTML = '<span class="cpv-card-num">' + num + '</span><span class="cpv-card-title">' + escT(card.title) + '</span>';
+    var titleHtml = card.showTitle !== false ? '<span class="cpv-card-title">' + escT(card.title) + '</span>' : '';
+    header.innerHTML = '<span class="cpv-card-num">' + num + '</span>' + titleHtml;
 
     var icon = document.createElement('span');
     icon.className = 'cpv-card-icon';
@@ -154,15 +207,18 @@ function renderCardsPreview() {
     cardList.appendChild(cardEl);
 
     cardEl.addEventListener('click', function () {
+      if (expandedByDefault) { if (bubble) bubble.classList.add('hidden'); return; }
       var isOpen = cardEl.classList.contains('open');
       cardList.querySelectorAll('.cpv-card').forEach(function (c) { c.classList.remove('open'); });
       if (!isOpen) cardEl.classList.add('open');
-      bubble.classList.add('hidden');
+      if (bubble) bubble.classList.add('hidden');
     });
   });
 
-  var timeout = (data.settings && data.settings.speechBubbleTimeout) || 8000;
-  setTimeout(function () { bubble.classList.add('hidden'); }, timeout);
+  if (bubble) {
+    var timeout = (data.settings && data.settings.speechBubbleTimeout) || 8000;
+    setTimeout(function () { bubble.classList.add('hidden'); }, timeout);
+  }
 
   box.appendChild(cardList);
   wrapper.appendChild(box);
@@ -177,25 +233,12 @@ function refreshCards() {
 }
 
 // ── Downloads ──
-function downloadCardsJSON() {
-  var blob = new Blob([JSON.stringify(buildCardsData(), null, 2)], { type: 'application/json' });
-  triggerDownload(blob, 'data_learningactivity.json');
-  showToast('data_learningactivity.json downloaded');
-}
-
 function downloadCardsHTML() {
   var blob = new Blob([buildCardsHTML(buildCardsData())], { type: 'text/html' });
   triggerDownload(blob, 'index.html');
   showToast('index.html downloaded');
 }
 
-function downloadCardsZIP() {
-  var data = buildCardsData();
-  var zip = new JSZip();
-  zip.file('index.html', buildCardsHTML(data));
-  zip.file('data_learningactivity.json', JSON.stringify(data, null, 2));
-  zip.generateAsync({ type: 'blob' }).then(function (blob) {
-    triggerDownload(blob, 'rise-activity-cards.zip');
-    showToast('rise-activity-cards.zip downloaded');
-  });
+function copyCardsCode() {
+  copyToClipboard(buildCardsHTML(buildCardsData()));
 }

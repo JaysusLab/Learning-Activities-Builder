@@ -8,8 +8,6 @@
 <!-- Styles -->
 <link rel="stylesheet" href="css/styles.css">
 
-<!-- JSZip (CDN) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -23,45 +21,33 @@
   </div>
   <div class="topbar-actions">
     <div class="tab-actions active" id="actions-steps">
-      <button class="btn btn-secondary" onclick="downloadStepsJSON()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-        Download JSON
-      </button>
       <button class="btn btn-secondary" onclick="downloadStepsHTML()">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
         Download index.html
       </button>
-      <button class="btn btn-primary" onclick="downloadStepsZIP()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-        Download ZIP
+      <button class="btn btn-primary" onclick="copyStepsCode()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M2 11V3a1 1 0 011-1h8"/></svg>
+        Copy Code
       </button>
     </div>
     <div class="tab-actions" id="actions-cards">
-      <button class="btn btn-secondary" onclick="downloadCardsJSON()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-        Download JSON
-      </button>
       <button class="btn btn-secondary" onclick="downloadCardsHTML()">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
         Download index.html
       </button>
-      <button class="btn btn-primary" onclick="downloadCardsZIP()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-        Download ZIP
+      <button class="btn btn-primary" onclick="copyCardsCode()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M2 11V3a1 1 0 011-1h8"/></svg>
+        Copy Code
       </button>
     </div>
     <div class="tab-actions" id="actions-timeline">
-      <button class="btn btn-secondary" onclick="downloadTimelineJSON()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-        Download JSON
-      </button>
       <button class="btn btn-secondary" onclick="downloadTimelineHTML()">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
         Download index.html
       </button>
-      <button class="btn btn-primary" onclick="downloadTimelineZIP()">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-        Download ZIP
+      <button class="btn btn-primary" onclick="copyTimelineCode()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M2 11V3a1 1 0 011-1h8"/></svg>
+        Copy Code
       </button>
     </div>
   </div>
@@ -93,17 +79,17 @@
     <aside class="editor-panel">
       <div class="editor-scroll">
 
-        <div style="padding:16px 24px;border-bottom:1px solid var(--surface-border)">
-          <div class="field" style="margin-bottom:0">
-            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
-            <input type="text" id="s_activityTitle" value="Configure Workforce Planning Workflow Import" oninput="refreshSteps()">
-          </div>
-        </div>
-
         <div style="display:flex;border-bottom:1px solid var(--surface-border)">
           <div style="padding:14px 24px;flex:1">
             <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Activity Properties</p>
             <div style="display:flex;flex-direction:column;gap:12px">
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="s_showActivityTitle" onchange="toggleStepsActivityTitle()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show activity title</span>
+              </label>
               <label class="toggle-row">
                 <div class="toggle-switch">
                   <input type="checkbox" id="s_charToggle" onchange="toggleActivitySections()">
@@ -150,6 +136,13 @@
               <button class="theme-swatch"          id="s-bg-3" data-color="#9E9E9E" onclick="selectStepsBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
               <input type="text" id="s_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
             </div>
+          </div>
+        </div>
+
+        <div id="s-title-section" style="display:none;padding:16px 24px;border-bottom:1px solid var(--surface-border)">
+          <div class="field" style="margin-bottom:0">
+            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
+            <input type="text" id="s_activityTitle" value="Configure Workforce Planning Workflow Import" oninput="refreshSteps()">
           </div>
         </div>
 
@@ -256,43 +249,74 @@
     <aside class="editor-panel">
       <div class="editor-scroll">
 
-        <div style="padding:16px 24px;border-bottom:1px solid var(--surface-border)">
+        <div style="display:flex;border-bottom:1px solid var(--surface-border)">
+          <div style="padding:14px 24px;flex:1">
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Activity Properties</p>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="c_showActivityTitle" onchange="toggleCardsActivityTitle()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show activity title</span>
+              </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="c_showSpeechBubble" onchange="toggleCardsSpeechBubble()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show speech bubble</span>
+              </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="c_expandedByDefault" onchange="refreshCards()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Expand cards by default</span>
+              </label>
+            </div>
+          </div>
+          <div style="width:1px;background:var(--surface-border);margin:14px 0;flex-shrink:0"></div>
+          <div style="padding:14px 24px">
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Theme</p>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+              <button class="theme-swatch selected" id="c-swatch-blue"   onclick="selectCardsTheme('blue')"   style="background:#5564FF" title="Blue"></button>
+              <button class="theme-swatch"           id="c-swatch-pink"   onclick="selectCardsTheme('pink')"   style="background:#FF8FB3" title="Pink"></button>
+              <button class="theme-swatch"           id="c-swatch-green"  onclick="selectCardsTheme('green')"  style="background:#00985B" title="Green"></button>
+              <button class="theme-swatch"           id="c-swatch-yellow" onclick="selectCardsTheme('yellow')" style="background:#FFCB11" title="Yellow"></button>
+            </div>
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Background</p>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="theme-swatch selected" id="c-bg-1" data-color="#EBEBEB" onclick="selectCardsBg('#EBEBEB')" style="background:#EBEBEB;border:1px solid var(--surface-border)" title="Light"></button>
+              <button class="theme-swatch"          id="c-bg-2" data-color="#D4D4D4" onclick="selectCardsBg('#D4D4D4')" style="background:#D4D4D4;border:1px solid var(--surface-border)" title="Mid"></button>
+              <button class="theme-swatch"          id="c-bg-3" data-color="#9E9E9E" onclick="selectCardsBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
+              <input type="text" id="c_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomCardsBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
+            </div>
+          </div>
+        </div>
+
+        <div id="c-title-section" style="display:none;padding:16px 24px;border-bottom:1px solid var(--surface-border)">
           <div class="field" style="margin-bottom:0">
             <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
             <input type="text" id="c_activityTitle" value="Interactive Learning Component" oninput="refreshCards()">
           </div>
         </div>
 
-        <div style="padding:14px 24px;border-bottom:1px solid var(--surface-border)">
-          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Theme</p>
-          <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
-            <button class="theme-swatch selected" id="c-swatch-blue"   onclick="selectCardsTheme('blue')"   style="background:#5564FF" title="Blue"></button>
-            <button class="theme-swatch"           id="c-swatch-pink"   onclick="selectCardsTheme('pink')"   style="background:#FF8FB3" title="Pink"></button>
-            <button class="theme-swatch"           id="c-swatch-green"  onclick="selectCardsTheme('green')"  style="background:#00985B" title="Green"></button>
-            <button class="theme-swatch"           id="c-swatch-yellow" onclick="selectCardsTheme('yellow')" style="background:#FFCB11" title="Yellow"></button>
-          </div>
-          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Background</p>
-          <div style="display:flex;gap:10px;align-items:center">
-            <button class="theme-swatch selected" id="c-bg-1" data-color="#EBEBEB" onclick="selectCardsBg('#EBEBEB')" style="background:#EBEBEB;border:1px solid var(--surface-border)" title="Light"></button>
-            <button class="theme-swatch"          id="c-bg-2" data-color="#D4D4D4" onclick="selectCardsBg('#D4D4D4')" style="background:#D4D4D4;border:1px solid var(--surface-border)" title="Mid"></button>
-            <button class="theme-swatch"          id="c-bg-3" data-color="#9E9E9E" onclick="selectCardsBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
-            <input type="text" id="c_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomCardsBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
-          </div>
-        </div>
-
-        <div class="accordion open" id="c-acc-bubble">
-          <button class="accordion-trigger" onclick="toggleAccordion('c-acc-bubble')">
-            <div class="accordion-trigger-left"><span class="accordion-title">Speech bubble</span></div>
-            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
-          </button>
-          <div class="accordion-body">
-            <div class="field">
-              <label>Speech bubble text</label>
-              <input type="text" id="c_bubbleText" value="Click on the cards to learn more" oninput="refreshCards()">
-            </div>
-            <div class="field">
-              <label>Auto-hide timeout (ms)</label>
-              <input type="number" id="c_bubbleTimeout" value="8000" min="1000" max="30000" step="500" oninput="refreshCards()">
+        <div id="c-bubble-section" style="display:none;border-bottom:1px solid var(--surface-border)">
+          <div class="accordion open" id="c-acc-bubble">
+            <button class="accordion-trigger" onclick="toggleAccordion('c-acc-bubble')">
+              <div class="accordion-trigger-left"><span class="accordion-title">Speech bubble</span></div>
+              <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+            </button>
+            <div class="accordion-body">
+              <div class="field">
+                <label>Speech bubble text</label>
+                <input type="text" id="c_bubbleText" value="Click on the cards to learn more" oninput="refreshCards()">
+              </div>
+              <div class="field">
+                <label>Auto-hide timeout (ms)</label>
+                <input type="number" id="c_bubbleTimeout" value="8000" min="1000" max="30000" step="500" oninput="refreshCards()">
+              </div>
             </div>
           </div>
         </div>
@@ -337,27 +361,42 @@
     <aside class="editor-panel">
       <div class="editor-scroll">
 
-        <div style="padding:16px 24px;border-bottom:1px solid var(--surface-border)">
-          <div class="field" style="margin-bottom:0">
-            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
-            <input type="text" id="t_activityTitle" value="Setup Steps" oninput="refreshTimeline()">
+        <div style="display:flex;border-bottom:1px solid var(--surface-border)">
+          <div style="padding:14px 24px;flex:1">
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Activity Properties</p>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="t_showActivityTitle" onchange="toggleTimelineActivityTitle()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show activity title</span>
+              </label>
+            </div>
+          </div>
+          <div style="width:1px;background:var(--surface-border);margin:14px 0;flex-shrink:0"></div>
+          <div style="padding:14px 24px">
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Theme</p>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+              <button class="theme-swatch"           id="t-swatch-blue"   onclick="selectTimelineTheme('blue')"   style="background:#5564FF" title="Blue"></button>
+              <button class="theme-swatch"           id="t-swatch-pink"   onclick="selectTimelineTheme('pink')"   style="background:#FF8FB3" title="Pink"></button>
+              <button class="theme-swatch selected"  id="t-swatch-green"  onclick="selectTimelineTheme('green')"  style="background:#00985B" title="Green"></button>
+              <button class="theme-swatch"           id="t-swatch-yellow" onclick="selectTimelineTheme('yellow')" style="background:#FFCB11" title="Yellow"></button>
+            </div>
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Background</p>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="theme-swatch"          id="t-bg-1" data-color="#EBEBEB" onclick="selectTimelineBg('#EBEBEB')" style="background:#EBEBEB;border:1px solid var(--surface-border)" title="Light"></button>
+              <button class="theme-swatch selected" id="t-bg-2" data-color="#D4D4D4" onclick="selectTimelineBg('#D4D4D4')" style="background:#D4D4D4;border:1px solid var(--surface-border)" title="Mid"></button>
+              <button class="theme-swatch"          id="t-bg-3" data-color="#9E9E9E" onclick="selectTimelineBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
+              <input type="text" id="t_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomTimelineBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
+            </div>
           </div>
         </div>
 
-        <div style="padding:14px 24px;border-bottom:1px solid var(--surface-border)">
-          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Theme</p>
-          <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
-            <button class="theme-swatch"           id="t-swatch-blue"   onclick="selectTimelineTheme('blue')"   style="background:#5564FF" title="Blue"></button>
-            <button class="theme-swatch"           id="t-swatch-pink"   onclick="selectTimelineTheme('pink')"   style="background:#FF8FB3" title="Pink"></button>
-            <button class="theme-swatch selected"  id="t-swatch-green"  onclick="selectTimelineTheme('green')"  style="background:#00985B" title="Green"></button>
-            <button class="theme-swatch"           id="t-swatch-yellow" onclick="selectTimelineTheme('yellow')" style="background:#FFCB11" title="Yellow"></button>
-          </div>
-          <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Background</p>
-          <div style="display:flex;gap:10px;align-items:center">
-            <button class="theme-swatch"          id="t-bg-1" data-color="#EBEBEB" onclick="selectTimelineBg('#EBEBEB')" style="background:#EBEBEB;border:1px solid var(--surface-border)" title="Light"></button>
-            <button class="theme-swatch selected" id="t-bg-2" data-color="#D4D4D4" onclick="selectTimelineBg('#D4D4D4')" style="background:#D4D4D4;border:1px solid var(--surface-border)" title="Mid"></button>
-            <button class="theme-swatch"          id="t-bg-3" data-color="#9E9E9E" onclick="selectTimelineBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
-            <input type="text" id="t_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomTimelineBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
+        <div id="t-title-section" style="display:none;padding:16px 24px;border-bottom:1px solid var(--surface-border)">
+          <div class="field" style="margin-bottom:0">
+            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
+            <input type="text" id="t_activityTitle" value="Setup Steps" oninput="refreshTimeline()">
           </div>
         </div>
 

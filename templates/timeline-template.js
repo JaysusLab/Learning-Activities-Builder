@@ -41,7 +41,7 @@ function buildTimelineHTML(data) {
     'var currentStep=0;',
     'function pad(n){return String(n).padStart(2,"0");}',
     'function init(){',
-    '  document.getElementById("activityTitle").textContent=DATA.title;',
+    '  if(DATA.showActivityTitle){var at=document.getElementById("activityTitle");if(at)at.textContent=DATA.title;}',
     '  var container=document.getElementById("timelineSteps");',
     '  container.innerHTML="";',
     '  DATA.steps.forEach(function(step,i){',
@@ -89,7 +89,7 @@ function buildTimelineHTML(data) {
     '<style>\n' + css + '\n</style>\n' +
     '</head>\n<body>\n' +
     '<div class="activity-container">\n' +
-    '  <h1 id="activityTitle"></h1>\n' +
+    (data.showActivityTitle ? '  <h1 id="activityTitle"></h1>\n' : '') +
     '  <div class="timeline-wrapper" id="timelineSteps"></div>\n' +
     '</div>\n' +
     '<script>\n' + js + '\n<\/script>\n' +

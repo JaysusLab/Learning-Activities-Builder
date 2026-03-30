@@ -32,6 +32,26 @@ function showToast(msg) {
   toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2800);
 }
 
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).catch(function () { fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
+  showToast('Your code has been copied');
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
 function triggerDownload(blob, filename) {
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
