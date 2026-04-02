@@ -125,6 +125,12 @@ function toggleCardsSpeechBubble() {
   refreshCards();
 }
 
+function toggleCardsIntroParagraph() {
+  var show = document.getElementById('c_showIntroParagraph').checked;
+  document.getElementById('c-intro-section').style.display = show ? 'block' : 'none';
+  refreshCards();
+}
+
 // ── Build JSON data ──
 function getExpandedByDefault() {
   var el = document.getElementById('c_expandedByDefault');
@@ -134,12 +140,16 @@ function getExpandedByDefault() {
 function buildCardsData() {
   var showSpeechBubble = document.getElementById('c_showSpeechBubble') ? document.getElementById('c_showSpeechBubble').checked : false;
   var showActivityTitle = document.getElementById('c_showActivityTitle') ? document.getElementById('c_showActivityTitle').checked : false;
+  var showIntroParagraph = document.getElementById('c_showIntroParagraph') ? document.getElementById('c_showIntroParagraph').checked : false;
+  var horizontalLayout = document.getElementById('c_horizontalLayout') ? document.getElementById('c_horizontalLayout').checked : false;
   return {
     title: v('c_activityTitle'),
     showActivityTitle: showActivityTitle,
     showSpeechBubble: showSpeechBubble,
     speechBubble: v('c_bubbleText'),
-    settings: { speechBubbleTimeout: parseInt(v('c_bubbleTimeout')) || 8000, expandedByDefault: getExpandedByDefault() },
+    showIntroParagraph: showIntroParagraph,
+    introParagraph: v('c_introParagraph'),
+    settings: { speechBubbleTimeout: parseInt(v('c_bubbleTimeout')) || 8000, expandedByDefault: getExpandedByDefault(), horizontalLayout: horizontalLayout },
     theme: CARDS_THEMES[selectedCardsTheme] || CARDS_THEMES.blue,
     backgroundColor: selectedCardsBg,
     cards: cards.map(function (c, i) {
@@ -178,31 +188,45 @@ function renderCardsPreview() {
 
   var box = document.createElement('div');
   box.className = 'cpv-container';
-  var cardList = document.createElement('div');
-  cardList.className = 'cpv-cards';
 
   var expandedByDefault = (data.settings && data.settings.expandedByDefault) || false;
+  var horizontalLayout = (data.settings && data.settings.horizontalLayout) || false;
+
+  if (data.showIntroParagraph && data.introParagraph) {
+    var introEl = document.createElement('p');
+    introEl.className = 'cpv-intro';
+    introEl.textContent = data.introParagraph;
+    box.appendChild(introEl);
+  }
+
+  var cardList = document.createElement('div');
+  var cardListClasses = 'cpv-cards';
+  if (expandedByDefault) cardListClasses += ' cpv-cards--expanded';
+  if (horizontalLayout) cardListClasses += ' cpv-cards--horizontal';
+  cardList.className = cardListClasses;
 
   data.cards.forEach(function (card, i) {
     var num = String(card.number || i + 1).padStart(2, '0');
+    var noTitle = card.showTitle === false;
     var cardEl = document.createElement('div');
-    cardEl.className = 'cpv-card' + (expandedByDefault ? ' open' : '');
+    cardEl.className = 'cpv-card' + (expandedByDefault ? ' open' : '') + (noTitle ? ' no-title' : '');
 
     var header = document.createElement('div');
     header.className = 'cpv-card-header';
-    var titleHtml = card.showTitle !== false ? '<span class="cpv-card-title">' + escT(card.title) + '</span>' : '';
+    var titleHtml = noTitle ? '' : '<span class="cpv-card-title">' + escT(card.title) + '</span>';
     header.innerHTML = '<span class="cpv-card-num">' + num + '</span>' + titleHtml;
-
-    var icon = document.createElement('span');
-    icon.className = 'cpv-card-icon';
-    icon.innerHTML = '&#8250;';
 
     var body = document.createElement('div');
     body.className = 'cpv-card-body';
     body.textContent = card.content;
 
     cardEl.appendChild(header);
-    cardEl.appendChild(icon);
+    if (!expandedByDefault) {
+      var icon = document.createElement('span');
+      icon.className = 'cpv-card-icon';
+      icon.innerHTML = '&#8250;';
+      cardEl.appendChild(icon);
+    }
     cardEl.appendChild(body);
     cardList.appendChild(cardEl);
 

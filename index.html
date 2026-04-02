@@ -274,6 +274,20 @@
                 </div>
                 <span>Expand cards by default</span>
               </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="c_showIntroParagraph" onchange="toggleCardsIntroParagraph()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show intro paragraph</span>
+              </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="c_horizontalLayout" onchange="refreshCards()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Horizontal card layout</span>
+              </label>
             </div>
           </div>
           <div style="width:1px;background:var(--surface-border);margin:14px 0;flex-shrink:0"></div>
@@ -299,6 +313,13 @@
           <div class="field" style="margin-bottom:0">
             <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
             <input type="text" id="c_activityTitle" value="Interactive Learning Component" oninput="refreshCards()">
+          </div>
+        </div>
+
+        <div id="c-intro-section" style="display:none;padding:16px 24px;border-bottom:1px solid var(--surface-border)">
+          <div class="field" style="margin-bottom:0">
+            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Intro paragraph</label>
+            <textarea id="c_introParagraph" rows="3" oninput="refreshCards()" placeholder="Add an introductory paragraph here..."></textarea>
           </div>
         </div>
 
