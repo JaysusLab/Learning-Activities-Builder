@@ -46,6 +46,7 @@ function detectTemplate(html) {
   if (html.indexOf('id="slidesContainer"') !== -1) return 'steps';
   if (html.indexOf('id="cardsContainer"') !== -1) return 'cards';
   if (html.indexOf('id="timelineSteps"') !== -1) return 'timeline';
+  if (html.indexOf('id="accordionContainer"') !== -1) return 'accordion';
   return null;
 }
 
@@ -58,6 +59,7 @@ function importApplyTheme(primary, prefix) {
   if (prefix === 's') selectStepsTheme(name);
   else if (prefix === 'c') selectCardsTheme(name);
   else if (prefix === 't') selectTimelineTheme(name);
+  else if (prefix === 'a') selectAccordionTheme(name);
 }
 
 function importApplyBg(hex, prefix) {
@@ -73,6 +75,9 @@ function importApplyBg(hex, prefix) {
   } else if (prefix === 't') {
     if (known.indexOf(upper) !== -1) { selectTimelineBg(hex); }
     else { selectedTimelineBg = hex; document.getElementById('timelinePreview').style.background = hex; document.getElementById('t_bgCustom').value = hex; }
+  } else if (prefix === 'a') {
+    if (known.indexOf(upper) !== -1) { selectAccordionBg(hex); }
+    else { selectedAccordionBg = hex; document.getElementById('accordionPreview').style.background = hex; document.getElementById('a_bgCustom').value = hex; }
   }
 }
 
@@ -221,6 +226,44 @@ function importPopulateTimeline(data) {
   renderTimelinePreview();
 }
 
+// ── Populate: Accordion ──
+function importPopulateAccordion(data) {
+  var settings = data.settings || {};
+
+  // Activity title
+  importSetToggle('a_showActivityTitle', data.showActivityTitle);
+  importSetVal('a_activityTitle', data.title);
+  importSetVisible('a-title-section', data.showActivityTitle);
+
+  // Speech bubble
+  importSetToggle('a_showSpeechBubble', data.showSpeechBubble);
+  importSetVisible('a-bubble-section', data.showSpeechBubble);
+  importSetVal('a_bubbleText', data.speechBubble);
+  importSetVal('a_bubbleTimeout', settings.speechBubbleTimeout || 8000);
+
+  // Intro paragraph
+  importSetToggle('a_showIntroParagraph', data.showIntroParagraph);
+  importSetVisible('a-intro-section', data.showIntroParagraph);
+  importSetVal('a_introParagraph', data.introParagraph);
+
+  // Toggles
+  importSetToggle('a_allowMultiple', settings.allowMultiple);
+  importSetToggle('a_firstItemOpen', settings.firstItemOpen);
+
+  // Items array
+  accordionItems.length = 0;
+  (data.items || []).forEach(function (item) {
+    accordionItems.push({ title: item.title || '', content: item.content || '' });
+  });
+
+  // Theme & background
+  if (data.theme) importApplyTheme(data.theme.primary, 'a');
+  importApplyBg(data.backgroundColor, 'a');
+
+  renderAccordion();
+  renderAccordionPreview();
+}
+
 // ── Main import handler ──
 function handleImport() {
   var html = document.getElementById('importPaste').value.trim();
@@ -263,9 +306,12 @@ function handleImport() {
   } else if (template === 'cards') {
     importPopulateCards(data);
     switchTab('cards');
-  } else {
+  } else if (template === 'timeline') {
     importPopulateTimeline(data);
     switchTab('timeline');
+  } else {
+    importPopulateAccordion(data);
+    switchTab('accordion');
   }
 
   showToast('Activity imported');

@@ -195,7 +195,7 @@ function renderCardsPreview() {
   if (data.showIntroParagraph && data.introParagraph) {
     var introEl = document.createElement('p');
     introEl.className = 'cpv-intro';
-    introEl.textContent = data.introParagraph;
+    introEl.innerHTML = escTBr(data.introParagraph);
     box.appendChild(introEl);
   }
 
@@ -218,7 +218,7 @@ function renderCardsPreview() {
 
     var body = document.createElement('div');
     body.className = 'cpv-card-body';
-    body.textContent = card.content;
+    body.innerHTML = escTBr(card.content);
 
     cardEl.appendChild(header);
     if (!expandedByDefault) {

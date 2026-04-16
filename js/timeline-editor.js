@@ -157,7 +157,7 @@ function renderTimelinePreview() {
 
     var desc = document.createElement('p');
     desc.className = 'tpv-step-desc';
-    desc.textContent = step.description;
+    desc.innerHTML = escTBr(step.description);
 
     stepContent.appendChild(header);
     stepContent.appendChild(desc);

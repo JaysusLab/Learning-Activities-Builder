@@ -231,6 +231,28 @@ body { font-family: var(--sans); background: var(--surface-alt); color: var(--te
 .tpv-connector { display: block; width: 3px; height: 28px; background: var(--tpv-primary); margin: 0 auto; opacity: 0; transition: opacity 0.4s ease; }
 .tpv-connector.visible { opacity: 1; }
 
+/* ── Accordion in-page preview ── */
+.apv-wrapper { max-width: 540px; width: 100%; --apv-primary: #5564FF; --apv-accent: #DDE0FF; }
+.apv-title { font-family: var(--mono); font-size: 1rem; font-weight: bold; text-transform: uppercase; color: #000; margin-bottom: 14px; text-align: center; border-bottom: 3px solid var(--apv-primary); padding-bottom: 12px; }
+.apv-bubble { background: var(--apv-accent); border: 2px solid var(--apv-primary); border-radius: 6px; width: 55%; padding: 10px 16px; font-size: 13px; color: #000; margin-bottom: 14px; text-align: center; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.15); font-family: var(--sans); transition: opacity 0.4s; }
+.apv-bubble::after { content: ''; position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%); border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 9px solid var(--apv-primary); }
+.apv-bubble::before { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid var(--apv-accent); }
+.apv-bubble.hidden { opacity: 0; pointer-events: none; }
+.apv-container { width: 100%; background: #fff; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #F2F2F2; padding: 14px 18px 18px; }
+.apv-intro { font-size: .88rem; line-height: 1.65; font-family: var(--sans); margin-bottom: 12px; color: #000; }
+.apv-list { display: flex; flex-direction: column; gap: 6px; }
+.apv-item { border: 2px solid var(--apv-accent); border-radius: 6px; overflow: hidden; transition: border-color .25s ease; }
+.apv-item.open { border-color: var(--apv-primary); }
+.apv-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; background: #fff; transition: background .2s ease; gap: 10px; user-select: none; }
+.apv-item.open .apv-header, .apv-header:hover { background: var(--apv-accent); }
+.apv-header-title { font-weight: bold; font-size: .9rem; line-height: 1.3; flex-grow: 1; font-family: var(--sans); }
+.apv-chevron { width: 18px; height: 18px; flex-shrink: 0; color: var(--apv-primary); transition: transform .25s ease; }
+.apv-item.open .apv-chevron { transform: rotate(180deg); }
+.apv-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+.apv-item.open .apv-body { max-height: 600px; }
+.apv-body-inner { padding: 10px 14px; font-size: .88rem; line-height: 1.65; color: #000; font-family: var(--sans); border-top: 1px solid var(--apv-accent); }
+.apv-item.open .apv-body-inner { border-top-color: var(--apv-primary); }
+
 /* ── Toast ── */
 /* ── Import modal ── */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }

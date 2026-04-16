@@ -55,6 +55,16 @@
         Copy Code
       </button>
     </div>
+    <div class="tab-actions" id="actions-accordion">
+      <button class="btn btn-secondary" onclick="downloadAccordionHTML()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
+        Download index.html
+      </button>
+      <button class="btn btn-primary" onclick="copyAccordionCode()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M2 11V3a1 1 0 011-1h8"/></svg>
+        Copy Code
+      </button>
+    </div>
   </div>
 </header>
 
@@ -65,6 +75,7 @@
   <button class="tab-btn active" id="tab-steps" onclick="switchTab('steps')">Use Case</button>
   <button class="tab-btn" id="tab-cards" onclick="switchTab('cards')">Card Interaction</button>
   <button class="tab-btn" id="tab-timeline" onclick="switchTab('timeline')">Vertical Steps</button>
+  <button class="tab-btn" id="tab-accordion" onclick="switchTab('accordion')">Accordion</button>
 </nav>
 
 <!-- ══════════════════════════════════════════
@@ -476,6 +487,139 @@
 </div>
 
 <!-- ══════════════════════════════════════════
+     TAB 4 — Accordion
+══════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-accordion">
+  <div class="workspace">
+    <section class="preview-panel">
+      <div class="preview-toolbar">
+        <span class="preview-label">Live preview</span>
+      </div>
+      <div class="preview-frame-wrap">
+        <div class="preview-viewport" id="accordionPreview"></div>
+      </div>
+    </section>
+
+    <aside class="editor-panel">
+      <div class="editor-scroll">
+
+        <div style="display:flex;border-bottom:1px solid var(--surface-border)">
+          <div style="padding:14px 24px;flex:1">
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Activity Properties</p>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="a_showActivityTitle" onchange="toggleAccordionActivityTitle()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show activity title</span>
+              </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="a_showIntroParagraph" onchange="toggleAccordionIntroParagraph()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show intro paragraph</span>
+              </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="a_showSpeechBubble" onchange="toggleAccordionSpeechBubble()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Show speech bubble</span>
+              </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="a_allowMultiple" onchange="refreshAccordion()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>Allow multiple open</span>
+              </label>
+              <label class="toggle-row">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="a_firstItemOpen" onchange="refreshAccordion()">
+                  <div class="toggle-track"></div>
+                </div>
+                <span>First item open by default</span>
+              </label>
+            </div>
+          </div>
+          <div style="width:1px;background:var(--surface-border);margin:14px 0;flex-shrink:0"></div>
+          <div style="padding:14px 24px">
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px">Theme</p>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+              <button class="theme-swatch selected" id="a-swatch-blue"   onclick="selectAccordionTheme('blue')"   style="background:#5564FF" title="Blue"></button>
+              <button class="theme-swatch"           id="a-swatch-pink"   onclick="selectAccordionTheme('pink')"   style="background:#FF8FB3" title="Pink"></button>
+              <button class="theme-swatch"           id="a-swatch-green"  onclick="selectAccordionTheme('green')"  style="background:#00985B" title="Green"></button>
+              <button class="theme-swatch"           id="a-swatch-yellow" onclick="selectAccordionTheme('yellow')" style="background:#FFCB11" title="Yellow"></button>
+            </div>
+            <p style="font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Background</p>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="theme-swatch selected" id="a-bg-1" data-color="#EBEBEB" onclick="selectAccordionBg('#EBEBEB')" style="background:#EBEBEB;border:1px solid var(--surface-border)" title="Light"></button>
+              <button class="theme-swatch"          id="a-bg-2" data-color="#D4D4D4" onclick="selectAccordionBg('#D4D4D4')" style="background:#D4D4D4;border:1px solid var(--surface-border)" title="Mid"></button>
+              <button class="theme-swatch"          id="a-bg-3" data-color="#9E9E9E" onclick="selectAccordionBg('#9E9E9E')" style="background:#9E9E9E;border:1px solid var(--surface-border)" title="Dark"></button>
+              <input type="text" id="a_bgCustom" placeholder="#000000" maxlength="7" oninput="applyCustomAccordionBg(this.value)" style="width:74px;font-family:var(--mono);font-size:11px;padding:3px 7px;border:1px solid var(--surface-border);border-radius:4px;color:var(--text-primary);background:var(--surface-bg)">
+            </div>
+          </div>
+        </div>
+
+        <div id="a-title-section" style="display:none;padding:16px 24px;border-bottom:1px solid var(--surface-border)">
+          <div class="field" style="margin-bottom:0">
+            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Activity title</label>
+            <input type="text" id="a_activityTitle" value="Expandable Sections" oninput="refreshAccordion()">
+          </div>
+        </div>
+
+        <div id="a-intro-section" style="display:none;padding:16px 24px;border-bottom:1px solid var(--surface-border)">
+          <div class="field" style="margin-bottom:0">
+            <label style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)">Intro paragraph</label>
+            <textarea id="a_introParagraph" rows="3" oninput="refreshAccordion()" placeholder="Add an introductory paragraph here..."></textarea>
+          </div>
+        </div>
+
+        <div id="a-bubble-section" style="display:none;border-bottom:1px solid var(--surface-border)">
+          <div class="accordion open" id="a-acc-bubble">
+            <button class="accordion-trigger" onclick="toggleAccordion('a-acc-bubble')">
+              <div class="accordion-trigger-left"><span class="accordion-title">Speech bubble</span></div>
+              <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+            </button>
+            <div class="accordion-body">
+              <div class="field">
+                <label>Speech bubble text</label>
+                <input type="text" id="a_bubbleText" value="Click on a section to expand it" oninput="refreshAccordion()">
+              </div>
+              <div class="field">
+                <label>Auto-hide timeout (ms)</label>
+                <input type="number" id="a_bubbleTimeout" value="8000" min="1000" max="30000" step="500" oninput="refreshAccordion()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion open" id="a-acc-items">
+          <button class="accordion-trigger" onclick="toggleAccordion('a-acc-items')">
+            <div class="accordion-trigger-left">
+              <span class="accordion-title">Items</span>
+              <span class="accordion-badge" id="a_itemCountBadge">3 items</span>
+            </div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div id="a_itemsContainer"></div>
+            <button class="add-step-btn" id="a_addItemBtn" onclick="addAccordionItem()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v10M3 8h10"/></svg>
+              Add item
+            </button>
+            <p class="step-limit-note" id="a_itemLimitNote" style="display:none">Maximum 12 items reached</p>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
      Import Activity Modal
 ══════════════════════════════════════════ -->
 <div class="modal-backdrop" id="importModal">
@@ -515,9 +659,11 @@
 <script src="templates/steps-template.js"></script>
 <script src="templates/cards-template.js"></script>
 <script src="templates/timeline-template.js"></script>
+<script src="templates/accordion-template.js"></script>
 <script src="js/steps-editor.js"></script>
 <script src="js/cards-editor.js"></script>
 <script src="js/timeline-editor.js"></script>
+<script src="js/accordion-editor.js"></script>
 <script src="js/import.js"></script>
 <script src="js/init.js"></script>
 
